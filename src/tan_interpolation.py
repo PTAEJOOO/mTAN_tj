@@ -68,21 +68,21 @@ if __name__ == '__main__':
     if args.enc == 'enc_rnn3':
         rec = models.enc_rnn3(
             dim, torch.linspace(0, 1., args.num_ref_points), args.latent_dim, 
-            args.rec_hidden, 128, learn_emb=args.learn_emb).to(device)
+            args.rec_hidden, 128, learn_emb=args.learn_emb, device=device).to(device)
     elif args.enc == 'mtan_rnn':
         rec = models.enc_mtan_rnn(
             dim, torch.linspace(0, 1., args.num_ref_points), args.latent_dim, args.rec_hidden, 
-            embed_time=128, learn_emb=args.learn_emb, num_heads=args.enc_num_heads).to(device)
+            embed_time=128, learn_emb=args.learn_emb, num_heads=args.enc_num_heads, device=device).to(device)
    
         
     if args.dec == 'rnn3':
         dec = models.dec_rnn3(
             dim, torch.linspace(0, 1., args.num_ref_points), args.latent_dim, 
-            args.gen_hidden, 128, learn_emb=args.learn_emb).to(device)
+            args.gen_hidden, 128, learn_emb=args.learn_emb, device=device).to(device)
     elif args.dec == 'mtan_rnn':
         dec = models.dec_mtan_rnn(
             dim, torch.linspace(0, 1., args.num_ref_points), args.latent_dim, args.gen_hidden, 
-            embed_time=128, learn_emb=args.learn_emb, num_heads=args.dec_num_heads).to(device)
+            embed_time=128, learn_emb=args.learn_emb, num_heads=args.dec_num_heads, device=device).to(device)
 
 
     params = (list(dec.parameters()) + list(rec.parameters()))
@@ -158,7 +158,7 @@ if __name__ == '__main__':
         print('Iter: {}, avg elbo: {:.4f}, avg reconst: {:.4f}, avg kl: {:.4f}, mse: {:.6f}'
             .format(itr, train_loss / train_n, -avg_reconst / train_n, avg_kl / train_n, mse / train_n))
         if itr % 10 == 0:
-            print('Test Mean Squared Error', utils.evaluate(dim, rec, dec, test_loader, args, 1))
+            print('Test Mean Squared Error', utils.evaluate(dim, rec, dec, test_loader, args, 1, device=device))
         if itr % 10 == 0 and args.save:
             torch.save({
                 'args': args,

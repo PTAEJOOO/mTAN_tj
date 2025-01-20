@@ -45,9 +45,9 @@ class multiTimeAttention(nn.Module):
         d_k = query.size(-1)
         scores = torch.matmul(query, key.transpose(-2, -1)) \
                  / math.sqrt(d_k)
-        # print(f"score shape : {scores.shape}")
+        print(f"score shape : {scores.shape}")
         scores = scores.unsqueeze(-1).repeat_interleave(dim, dim=-1)
-        # print(f"score shape : {scores.shape}")
+        print(f"score shape : {scores.shape}")
         if mask is not None:
             scores = scores.masked_fill(mask.unsqueeze(-3) == 0, -1e9)
         p_attn = F.softmax(scores, dim = -2)
@@ -61,22 +61,22 @@ class multiTimeAttention(nn.Module):
     def forward(self, query, key, value, mask=None, dropout=None):
         "Compute 'Scaled Dot Product Attention'"
         batch, seq_len, dim = value.size()
-        # print(f"query shape : {query.shape}")
-        # print(f"key shape : {key.shape}")
-        # print(f"value shape : {value.shape}")
+        print(f"query shape : {query.shape}")
+        print(f"key shape : {key.shape}")
+        print(f"value shape : {value.shape}")
         if mask is not None:
             # Same mask applied to all h heads.
             mask = mask.unsqueeze(1)
         value = value.unsqueeze(1)
         query, key = [l(x).view(x.size(0), -1, self.h, self.embed_time_k).transpose(1, 2)
                       for l, x in zip(self.linears, (query, key))]
-        # print(f"query shape : {query.shape}")
-        # print(f"key shape : {key.shape}")
-        # print(f"value shape : {value.shape}")
-        # print("#"*50)
+        print(f"query shape : {query.shape}")
+        print(f"key shape : {key.shape}")
+        print(f"value shape : {value.shape}")
+        print("#"*50)
         x, _ = self.attention(query, key, value, mask, dropout)
-        # print("#"*50)
-        # print(f"after att, x shape : {x.shape}")
+        print("#"*50)
+        print(f"after att, x shape : {x.shape}")
         x = x.transpose(1, 2).contiguous() \
              .view(batch, -1, self.h * dim)
         print(f"mTA output shape : {self.linears[-1](x).shape}")
@@ -123,7 +123,6 @@ class enc_mtan_rnn(nn.Module):
         return pe
        
     def forward(self, x, time_steps):
-        # print(f"time steps shape : {time_steps.shape}")
         time_steps = time_steps.cpu()
         mask = x[:, :, self.dim:]
         mask = torch.cat((mask, mask), 2)
@@ -133,8 +132,6 @@ class enc_mtan_rnn(nn.Module):
         else:
             key = self.fixed_time_embedding(time_steps).to(self.device)
             query = self.fixed_time_embedding(self.query.unsqueeze(0)).to(self.device)
-        print(f"in enc, query shape : {query.shape}")
-        print(f"in enc, key shape : {key.shape}")
         out = self.att(query, key, x, mask)
         out, _ = self.gru_rnn(out)
         out = self.hiddens_to_z0(out)
@@ -182,6 +179,7 @@ class dec_mtan_rnn(nn.Module):
         return pe
        
     def forward(self, z, time_steps):
+        print(f"in dec, z shape : {z.shape}")
         out, _ = self.gru_rnn(z)
         time_steps = time_steps.cpu()
         if self.learn_emb:

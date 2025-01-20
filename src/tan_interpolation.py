@@ -128,20 +128,14 @@ if __name__ == '__main__':
                 subsampled_data, subsampled_tp, subsampled_mask = \
                     observed_data, observed_tp, observed_mask
             out = rec(torch.cat((subsampled_data, subsampled_mask), 2), subsampled_tp)
-            print(f"main loop, out shape : {out.shape}")
             qz0_mean = out[:, :, :args.latent_dim]
-            print(f"main loop, qz0_mean shape : {qz0_mean.shape}")
             qz0_logvar = out[:, :, args.latent_dim:]
-            print(f"main loop, qz0_logvart shape : {qz0_logvar.shape}")
             # epsilon = torch.randn(qz0_mean.size()).to(device)
             epsilon = torch.randn(
                 args.k_iwae, qz0_mean.shape[0], qz0_mean.shape[1], qz0_mean.shape[2]
             ).to(device)
-            print(f"main loop, epsilon shape : {epsilon.shape}")
             z0 = epsilon * torch.exp(.5 * qz0_logvar) + qz0_mean
-            print(f"main loop, z0 shape : {z0.shape}")
             z0 = z0.view(-1, qz0_mean.shape[1], qz0_mean.shape[2])
-            print(f"main loop, z0 shape : {z0.shape}")
             pred_x = dec(
                 z0,
                 observed_tp[None, :, :].repeat(args.k_iwae, 1, 1).view(-1, observed_tp.shape[1])

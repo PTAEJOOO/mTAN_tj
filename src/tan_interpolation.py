@@ -8,6 +8,7 @@ from random import SystemRandom
 import models
 import utils
 import sys
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--niters', type=int, default=2000)
@@ -42,8 +43,11 @@ parser.add_argument('--dec-rnn', action='store_false')
 parser.add_argument('--sample-tp', type=float, default=1.0)
 parser.add_argument('--only-periodic', type=str, default=None)
 parser.add_argument('--dropout', type=float, default=0.0)
+
+parser.add_argument('--gpu', type=str, default='0', help='which gpu to use.')
 args = parser.parse_args()
 
+os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 if __name__ == '__main__':
     experiment_id = int(SystemRandom().random() * 100000)

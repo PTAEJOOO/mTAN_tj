@@ -1,0 +1,17 @@
+#!/bin/bash 
+#
+#SBATCH --job-name=mTAND
+#SBATCH --partition=jobs
+#SBATCH --account=taejoo
+#SBATCH --mem=10gb
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=1000:00:00
+#SBATCH --output=/home/taejoo/dsl_lab/mTAN_tj/logs/mTAND.log
+#SBATCH --error=/home/taejoo/dsl_lab/mTAN_tj/errs/mTAND.err
+#SBATCH --nodelist=gpusystem
+
+source activate mamba
+
+bash /home/taejoo/dsl_lab/mTAN_tj/scripts/run_physionet.sh
+

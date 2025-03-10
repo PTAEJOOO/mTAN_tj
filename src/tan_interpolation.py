@@ -140,11 +140,8 @@ if __name__ == '__main__':
                 z0,
                 observed_tp[None, :, :].repeat(args.k_iwae, 1, 1).view(-1, observed_tp.shape[1])
             )
-            print(f"main loop, pred_x shape : {pred_x.shape}")
             # nsample, batch, seqlen, dim
             pred_x = pred_x.view(args.k_iwae, batch_len, pred_x.shape[1], pred_x.shape[2])
-            print(f"main loop, pred_x shape : {pred_x.shape}")
-            sys.exit(0)
             # compute loss
             logpx, analytic_kl = utils.compute_losses(
                 dim, train_batch, qz0_mean, qz0_logvar, pred_x, args, device)

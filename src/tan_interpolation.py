@@ -122,6 +122,7 @@ if __name__ == '__main__':
         for train_batch in train_loader:
             train_batch = train_batch.to(device)
             batch_len = train_batch.shape[0]
+            print(batch_len)
             observed_data = train_batch[:, :, :dim]
             observed_mask = train_batch[:, :, dim:2 * dim]
             observed_tp = train_batch[:, :, -1]
@@ -153,6 +154,7 @@ if __name__ == '__main__':
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            sys.exit(0)
             train_loss += loss.item() * batch_len
             train_n += batch_len
             avg_reconst += torch.mean(logpx) * batch_len
